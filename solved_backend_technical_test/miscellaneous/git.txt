@@ -1,0 +1,33 @@
+1 - We decide to remove a creepy old section from our Legacy application, but we didn't know a few co-workers still use it. 
+In the meantime, another one deploy a few fixes to master. Now you have a worried Product Owner telling you to recover this old code. How would you do this with git commands?
+
+It always depends on the team worflow, so first I would ask or read the team documentation and guidelines.
+I would assume we are working on a stable DEV branch and we merged the legacy code refactor (I will asume that the refactor branch name was KEY-0001_NiceRefactor).
+First thing I want to archieve is to make DEV stable again so I would create a new branch from the last DEV commit with the same name of my refactor feature (Revert_KEY_0001_NiceRefactor)
+I need the merge hash so I can use:
+
+$ git log
+
+$ git checkout origin develop
+$ git branch -o Revert_KEY_0001_NiceRefactor
+$ git revert -m 1 <MERGE_HASH> 
+
+Here I will need to solve some conflicts since I'm chaning some code
+
+$ git push -u origin Revert_KEY_0001_NiceRefactor
+
+Now I'll ask for a Pull Request, when it's meged DEV is sable and I can create my FIX branch
+
+$ git checkout origin develop
+$ git branch -o FIX_KEY_0001_NiceRefactor
+
+Now I must revert my last revert to recover the DEV broken status, fix the issue and then Pull Request again to DEV.
+
+2 - A coworker convinced you of always using git from the console. You are making a commit and... Vim opens! The horror! You have written the commit message, but how do we save the file and exit Vim?
+To enable commands use ESC then write :x as a save and quit shortcut.
+
+3 - We have a problem with two workmates because always have the same discussion in the dailies because one is a Merge fan and the other one is a Rebase evangelizer. What is your opinion about Rebase and Merge?
+With Merge you will conserve all the commit historial. 
+Witrh Rebase you can edit every commit you did on that branch before merging it to make it cleaner.
+I would prefer to join all my commits into one with rebase -autosquash before creating a Pull Request that way is easier to follow every branch commit on DEV when it's merged, also is easy to work with cherry picks if it would be necessary
+since all you work is joined in just one commit.

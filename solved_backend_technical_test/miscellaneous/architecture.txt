@@ -1,0 +1,23 @@
+1 - Our CTO keeps saying sticky sessions are bad and they should not exist. 
+But are they that bad? What are the effects of enabling / disabling them?
+When sticky sessions are enabled the balancer send the same request to the first server that it started the session, this allow to store the session on the RAM of that server.
+If we disable them, the session data must be stored in a shared resource and that could add complexity to our system but make our servers less stressed.
+
+2 - Your team is performing maintenance tasks in a PostgreSQL Cluster so it's necessary to put the website in maintenance mode. 
+But Google keeps indexing the maintenance page and this is affecting our SEO. How can we avoid this situation?
+Trigger Error 503 will tell Google to come back later.
+
+3 - Our data scientists need to run a predictive model for each of our ~200.000 customers, and each one takes about 40 seconds to finish. 
+How could this be handled in order to have the results in a few hours?
+I never faced this challenge but I would ask the team and try to research about ERM clusters on AWS.
+
+4 - A DevOps Engineer in the team keeps saying we need to start applying IAM roles to our EC2 instances in AWS. 
+Do you know what this is and what can it be used for?
+IAM is a AWS service that allows entities to use other entities, such entities could be users or others services.
+For instance if your EC2 want just to read a DynamoDB service you could provide that instance with a new brand role with DynamoDBReadOnly.
+You can group those rights into roles to have more organization.
+
+5 - We have started using Amazon SQS which is an at-least-once delivery queue system. I did not want to pick the next ticket in the Backlog as it said we need to implement message deduping. 
+Do you know what this is? How would you implement such feature? Why do we need this?
+Deduping will be produced when some message is sent more than one time, if there's some network issue and the sender is doesn't notice that the message has been received he could send another and generate a duplicate request.
+This ID will prevent this for happening since every same request will be mark with the same transaction token and when it reaches the server it will be ignored.

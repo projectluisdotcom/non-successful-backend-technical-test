@@ -1,0 +1,40 @@
+1 - We need to know the date of the maximum consumtion for each address of our clients.
+Can you write a query that returns this information? You can use `clients_and_consumptions.sql` in order to build the table structure and minimal data.
+Use PostgreSQL preferably, and otherwise tell us what engine you have used.
+
+SELECT address, MAX(consumption)
+FROM consumptions
+INNER JOIN clients ON consumptions.code = clients.code
+GROUP BY address;
+
+2 - We have a massive PostgreSQL cluster with millions of rows in some tables.
+Suddenly, one query starts showing up in the Slow Query Log.
+Please describe the actions you would do in order to diagnose and optimise the query.
+I never faced this challenge on a big production PostresSQL DDBB but I would do as follows:
+First I need to know if this query was already slow, so asking the team or reading the query history would be enough. 
+In case is it was not already slow I would first take care of the resources and network state of the DDBB.
+Other procedure to try to get some light is to read the logs for more information.
+For resources I would search for RAM swaps on the server with command free, memory swaps with disc space will trigger if the server is short on memory.
+CPU could be a problem so top command will show us the current capacity used for the server.
+For network status a ping to the DDBB could be sufficient.
+After that PostgresSQL has a view with all the queries, performing SELECT * FROM pg_stat_activity will show this info. 
+Here we can look for if its a just single client creating the delay or if is a general delay, it can be possible that some tables are locked.
+
+
+3 - You are in a Christmas dinner and somehow, your brother-in-law says we have charged him twice.
+You know this is completely impossible because we use transactions in our system!
+Try to explain what a transaction is to someone non very technical in a few sentences.
+Every action from the user has a unique token for the whole transaction to avoid duplicates, if the server accepts an operation it registers the token and then if encounters the same token for another operation will ignore it.
+
+4 - We have a lot of activity in our databases so we have decided to implement master - slave replication in PostgreSQL.
+We also changed our code in order to write new records to the master and always read data from the slave.
+Luckily, the servers seem to be fine again in terms of CPU but we are discovering now we don't always get the latest written data.
+Why is this? How can we limit this effect?
+When the Master DB get the fresh data it takes some time to sync with the reader slaves. This is called replication lag and it can be minimized with different aproached, 
+one of them could be reducing the stress of the Master if it is stressed. Other reason could that the Master is not receiving enough request to replicate the data. 
+Spaming every every few seconds the master with a dummy query would do the trick.
+
+5 - We just installed Redis and it is awesome! It is super fast and we can do lots of different operations with it so we have decided to load a lot of data into it.
+Suddenly, Redis becomes really slow and some keys are disappearing. What did we do wrong?
+I didn't find this problem before. A bit or research lead me this hint:
+The server could run low on RAM and Redis eviction policy will trigger.
